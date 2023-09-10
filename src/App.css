@@ -25,6 +25,10 @@
   display: flex;
 }
 
+.todo {
+  justify-content: flex-start;
+}
+
 .todos-header {
   justify-content: space-between;
   position: relative;
