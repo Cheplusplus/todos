@@ -15,13 +15,13 @@ const Content = ({ nightMode, setNightMode }) => {
         {nightMode ? (
           <img
             src={nightModeLogoNight}
-            className="nightmode-logo"
+            className="nightmode-logo pointer"
             onClick={() => toggleNightMode(nightMode, setNightMode)}
           />
         ) : (
           <img
             src={nightModeLogoDay}
-            className="nightmode-logo"
+            className="nightmode-logo pointer"
             onClick={() => toggleNightMode(nightMode, setNightMode)}
           />
         )}

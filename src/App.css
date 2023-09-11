@@ -3,6 +3,15 @@
   margin: 0;
   padding: 0;
   z-index: 1;
+  cursor: default;
+}
+
+input {
+  cursor: text;
+}
+
+*:focus {
+  outline: none;
 }
 
 #root {
@@ -12,6 +21,7 @@
 
 .container {
   height: 100vh;
+  background-color: #FAFAFA;
 }
 
 .content {
@@ -27,13 +37,51 @@
 
 .todos {
   position: relative;
-  top: 200px;
+  top: 30vh;
   background-color: #FFFFFF;
+  border-radius: 5px;
 }
+
+.box-shadow-light {
+  box-shadow: 0px 35px 50px -15px rgba(194, 195, 214, 0.5);
+}
+
+.box-shadow-dark {
+  box-shadow: 0px 35px 50px -15px rgba(0, 0, 0, 0.5);
+}
+
+
 
 .todo {
   justify-content: flex-start;
   z-index: 2;
+  
+}
+
+.todo > * {
+  padding: 15px;
+}
+
+.todo-input-holder {
+  padding: 15px;
+  width: 100%;
+  background-color: #FFFFFF;
+  position: absolute;
+  top: -80px;
+  left: 0;
+  border-radius: 5px;
+}
+
+.todo-input-holder > input {
+  width: 100%;
+  border: none;
+  margin-left: 20px;
+  color: #9495A5;
+  
+}
+
+input::selection {
+  border: none ;
 }
 
 .todos-header {
@@ -66,6 +114,16 @@
   height: 26px;
 }
 
+.filters {
+  justify-content: space-between;
+  font-size: 0.9em;
+  padding: 15px;
+}
+
+.filter-controls > * {
+  margin: 5px; 
+}
+
 .bg-img {
   position: fixed;
   top: 0;
@@ -73,6 +131,34 @@
   width: 100%;
   z-index: 0;
 }
+
+.pointer {
+  cursor: url("../assets/pointer.png"), pointer;
+}
+
+.flex-3 {
+  width: 33%;
+}
+
+.checkMark, .close-icon {
+  width: 10%;
+}
+
+.message {
+  width: 80%;
+  text-align: left;
+}
+
+.dnd-text {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: -60px;
+}
+
+
+
+
 
 
 

@@ -7,7 +7,10 @@ const Container = () => {
   const [nightMode, setNightMode] = useState(false);
 
   return (
-    <div className={"container" + (nightMode ? " night" : "")}>
+    <div
+      className={"container" + (nightMode ? " night" : "")}
+      style={nightMode ? { color: "#fafafa" } : { color: "#000" }}
+    >
       {nightMode ? (
         <img src={bitmapNight} className="bg-img" />
       ) : (

@@ -1,11 +1,26 @@
 //@ts-check
 import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
+import { v4 as uuid } from "uuid";
+//@ts-ignore
+import oval from "../assets/Oval.svg";
 import TodoItem from "./TodoItem";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  PointerSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 /**
  * @typedef {Object} Todo
- * @property {number} id
+ * @property {string} id
  * @property {string} message
  * @property {boolean} isComplete
  */
@@ -21,7 +36,7 @@ const addTodo = (message, todos, setTodos) => {
   /**
    * @type {Todo}
    */
-  const newTodo = { id: todos.length, message: message, isComplete: false };
+  const newTodo = { id: uuid(), message: message, isComplete: false };
   setTodos([...todos, newTodo]);
   return [...todos, newTodo];
 };
@@ -30,43 +45,30 @@ const addTodo = (message, todos, setTodos) => {
  *
  * @param {Todo[]} todos
  * @param {function} setTodos
- * @returns {Todo[]|[]}
  */
 const delCompletedTodos = (setTodos, todos) => {
-  const newTodos = todos.filter((todo) => todo.isComplete !== true);
-  setTodos(newTodos);
-  return newTodos;
+  setTodos(todos.filter((todo) => todo.isComplete !== true));
 };
 
 /**
  *
- * @param {function} setUITodos
- * @param {Todo[]} todos
+ * @param {Todo} todo
+ * @returns {true|false}
  */
-const showActiveTodos = (setUITodos, todos, setUIState) => {
-  setUITodos(todos.filter((todo) => todo.isComplete === false));
-  setUIState(() => showActiveTodos);
-};
-
+const showActiveTodos = (todo) => (todo.isComplete === false ? true : false);
 /**
  *
- * @param {function} setUITodos
- * @param {Todo[]} todos
+ * @param {Todo} todo
+ * @returns {true|false}
  */
-const showCompletedTodos = (setUITodos, todos, setUIState) => {
-  setUITodos(todos.filter((todo) => todo.isComplete === true));
-  setUIState(() => showCompletedTodos);
-};
-
+const showCompletedTodos = (todo) => (todo.isComplete === true ? true : false);
 /**
  *
- * @param {function} setUITodos
- * @param {Todo[]} todos
+ * @param {Todo} todo
+ * @returns {true|false}
  */
-const showAllTodos = (setUITodos, todos, setUIState) => {
-  setUITodos(todos);
-  setUIState(() => showAllTodos);
-};
+
+const showAllTodos = (todo) => true;
 
 /**
  *
@@ -76,13 +78,12 @@ const showAllTodos = (setUITodos, todos, setUIState) => {
  */
 const Todos = ({ nightMode }) => {
   const [todos, setTodos] = useLocalStorage("todos", []);
-  const [uiTodos, setUITodos] = useState([]);
   const [uiState, setUIState] = useState(() => showAllTodos);
   const [message, setMessage] = useState("");
 
   /**
    *
-   * @param {number} id
+   * @param {string} id
    */
   const delTodo = (id) => {
     setTodos(todos.filter((/** @type {Todo} */ todo) => todo.id !== id));
@@ -90,7 +91,7 @@ const Todos = ({ nightMode }) => {
 
   /**
    *
-   * @param {number} id
+   * @param {string} id
    */
   const updateCheckMark = (id) => {
     setTodos(
@@ -101,21 +102,54 @@ const Todos = ({ nightMode }) => {
     );
   };
 
-  useEffect(() => {
-    showAllTodos(setUITodos, todos, setUIState);
-  }, []);
+  /**
+   *
+   * DND-Kit manager for when drag click ends
+   */
+  const onDragEnd = (e) => {
+    const { active, over } = e;
+    if (active.id === over.id) return;
+    setTodos((/** @type {Todo[]} */ todos) => {
+      const oldIndex = todos.findIndex(
+        (/** @type {Todo} */ todo) => todo.id === active.id
+      );
+      const newIndex = todos.findIndex(
+        (/** @type {Todo} */ todo) => todo.id === over.id
+      );
+      return arrayMove(todos, oldIndex, newIndex);
+    });
+  };
 
-  useEffect(() => {
-    uiState(setUITodos, todos, setUIState);
-  }, [todos]);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   return (
-    <div className={"todos" + (nightMode ? " night-todos" : "")}>
-      <div>
-        <img />
+    <div
+      className={
+        "todos" +
+        (nightMode ? " night-todos box-shadow-dark" : " box-shadow-light")
+      }
+    >
+      <div
+        className={
+          "flex-row todo-input-holder" + (nightMode ? " night-todos" : "")
+        }
+      >
+        <img src={oval} />
         <input
           type="text"
+          style={
+            nightMode
+              ? { backgroundColor: "#25273D" }
+              : { backgroundColor: "#FFFFFF" }
+          }
           placeholder="Create a new todo..."
+          maxLength={50}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
@@ -126,46 +160,77 @@ const Todos = ({ nightMode }) => {
           }}
         />
       </div>
-      {uiTodos.map((/** @type {Todo} */ todo) => {
-        return (
-          <TodoItem
-            id={todo.id}
-            message={todo.message}
-            isComplete={todo.isComplete}
-            del={delTodo}
-            updateCheckMark={updateCheckMark}
-          />
-        );
-      })}
-      <p>5 Items left</p>
-      <p
-        onClick={(e) => {
-          showAllTodos(setUITodos, todos, setUIState);
-        }}
-      >
-        All
-      </p>
-      <p
-        onClick={(e) => {
-          showActiveTodos(setUITodos, todos, setUIState);
-        }}
-      >
-        Active
-      </p>
-      <p
-        onClick={(e) => {
-          showCompletedTodos(setUITodos, todos, setUIState);
-        }}
-      >
-        Completed
-      </p>
-      <p
-        onClick={(e) => {
-          delCompletedTodos(setTodos, todos);
-        }}
-      >
-        Clear Completed
-      </p>
+      <div className="todo-list">
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={onDragEnd}
+          sensors={sensors}
+        >
+          <SortableContext items={todos} strategy={verticalListSortingStrategy}>
+            {todos.map((/** @type {Todo} */ todo) =>
+              uiState(todo) ? (
+                <TodoItem
+                  id={todo.id}
+                  key={todo.id}
+                  message={todo.message}
+                  isComplete={todo.isComplete}
+                  del={delTodo}
+                  updateCheckMark={updateCheckMark}
+                  nightMode={nightMode}
+                />
+              ) : null
+            )}
+          </SortableContext>
+        </DndContext>
+      </div>
+      <div className="flex-row filters">
+        <p>
+          {
+            todos.filter(
+              (/** @type {Todo} */ todo) => todo.isComplete === false
+            ).length
+          }{" "}
+          items left
+        </p>
+        <div
+          className="flex-row filter-controls"
+          style={{ justifyContent: "center" }}
+        >
+          <p
+            className="pointer"
+            onClick={(e) => {
+              setUIState(() => showAllTodos);
+            }}
+          >
+            All
+          </p>
+          <p
+            className="pointer"
+            onClick={(e) => {
+              setUIState(() => showActiveTodos);
+            }}
+          >
+            Active
+          </p>
+          <p
+            className="pointer"
+            onClick={(e) => {
+              setUIState(() => showCompletedTodos);
+            }}
+          >
+            Completed
+          </p>
+        </div>
+        <p
+          className="pointer"
+          onClick={(e) => {
+            delCompletedTodos(setTodos, todos);
+          }}
+        >
+          Clear Completed
+        </p>
+      </div>
+      <p className="dnd-text">Drag and drop to reorder list</p>
     </div>
   );
 };
