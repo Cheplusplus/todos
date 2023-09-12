@@ -1,6 +1,5 @@
+//@ts-check
 import React, { useState } from "react";
-import completed from "../assets/Group 4(1).png";
-import notCompleted from "../assets/Oval.svg";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -36,13 +35,13 @@ const TodoItem = ({
     >
       {isComplete ? (
         <img
-          src={completed}
+          src="/assets/group-41.png"
           className="checkMark"
           onClick={() => updateCheckMark(id)}
         />
       ) : (
         <img
-          src={notCompleted}
+          src="/assets/oval.svg"
           className="checkMark"
           onClick={() => updateCheckMark(id)}
         />

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { v4 as uuid } from "uuid";
 //@ts-ignore
-import oval from "../assets/Oval.svg";
 import TodoItem from "./TodoItem";
 import {
   DndContext,
@@ -140,7 +139,7 @@ const Todos = ({ nightMode }) => {
           "flex-row todo-input-holder" + (nightMode ? " night-todos" : "")
         }
       >
-        <img src={oval} />
+        <img src="/assets/oval.svg" />
         <input
           type="text"
           style={

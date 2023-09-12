@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import bitmapDay from "../assets/Bitmap(1).svg";
-import bitmapNight from "../assets/Bitmap.svg";
 import Content from "./Content";
 
 const Container = () => {
@@ -12,9 +10,9 @@ const Container = () => {
       style={nightMode ? { color: "#fafafa" } : { color: "#000" }}
     >
       {nightMode ? (
-        <img src={bitmapNight} className="bg-img" />
+        <img src="/assets/bitmap.svg" className="bg-img" />
       ) : (
-        <img src={bitmapDay} className="bg-img" />
+        <img src="/assets/bitmap1.svg" className="bg-img" />
       )}
       <Content nightMode={nightMode} setNightMode={setNightMode} />
     </div>

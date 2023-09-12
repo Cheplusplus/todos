@@ -1,6 +1,4 @@
 import React from "react";
-import nightModeLogoDay from "../assets/Combined Shape.svg";
-import nightModeLogoNight from "../assets/Combined Shape(1).svg";
 import Todos from "./Todos";
 
 const toggleNightMode = (nightMode, setNightMode) => {
@@ -14,13 +12,13 @@ const Content = ({ nightMode, setNightMode }) => {
         <h1>TODO</h1>
         {nightMode ? (
           <img
-            src={nightModeLogoNight}
+            src="/assets/combined-shape1.svg"
             className="nightmode-logo pointer"
             onClick={() => toggleNightMode(nightMode, setNightMode)}
           />
         ) : (
           <img
-            src={nightModeLogoDay}
+            src="/assets/combined-shape.svg"
             className="nightmode-logo pointer"
             onClick={() => toggleNightMode(nightMode, setNightMode)}
           />
